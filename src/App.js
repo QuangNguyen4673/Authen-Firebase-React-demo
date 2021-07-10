@@ -1,5 +1,6 @@
 import SignUp from "./components/SignUp";
 import About from "./components/About";
+import AuthProvider from "./AuthProvider";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 function App() {
   return (
@@ -16,7 +17,9 @@ function App() {
 
         <Switch>
           <Route path="/signup">
-            <SignUp />
+            <AuthProvider>
+              <SignUp />
+            </AuthProvider>
           </Route>
           <Route path="/about">
             <About />

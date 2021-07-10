@@ -1,63 +1,51 @@
-import React, { useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import { Button, Card, Form, Alert } from "react-bootstrap";
-import app, { auth } from "../firebase";
+import { useAuth } from "../AuthProvider";
 
 const SignUp = () => {
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState({ text: "", variant: "" });
-  const [password, setPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const userNameRef = useRef();
+  const emailRef = useRef();
+  const passwordRef = useRef();
 
-  useEffect(() => {
-    return () => console.log("cleanup");
-  }, []);
-  const handleSubmit = async () => {
+  const [loading, setLoading] = useState(false);
+  const { signup, currentUser } = useAuth();
+  const [dumpBtn, setDumpBtn] = useState(false);
+
+  const handleClick = async () => {
     setLoading(true);
-    await auth
-      .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        let user = userCredential.user;
-        if (user) {
-          setMessage({
-            text: "Your email has been registered successfully!",
-            variant: "success",
-          });
-        }
-      })
-      .catch((error) => {
-        setMessage({ text: error.message, variant: "danger" });
-      });
+    await signup(
+      userNameRef.current.value,
+      emailRef.current.value,
+      passwordRef.current.value
+    );
     setLoading(false);
   };
 
   return (
     <>
+      <button type="button" onClick={() => setDumpBtn(!dumpBtn)}>
+        Click to re-render
+      </button>
       <Card className="w-100 mx-auto mt-5" style={{ maxWidth: "400px" }}>
         <Card.Body>
           <h2 className="text-center mb-4">Sign up</h2>
-          {message.text && (
-            <Alert variant={message.variant}>{message.text}</Alert>
-          )}
+          {currentUser.email}
           <Form>
+            <Form.Group id="username">
+              <Form.Label>Your Name</Form.Label>
+              <Form.Control type="text" ref={userNameRef} />
+            </Form.Group>
             <Form.Group id="email">
               <Form.Label>Email</Form.Label>
-              <Form.Control
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
+              <Form.Control type="email" ref={emailRef} />
             </Form.Group>
             <Form.Group id="password">
               <Form.Label>Password</Form.Label>
-              <Form.Control
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <Form.Control type="password" ref={passwordRef} />
             </Form.Group>
             <Button
               disabled={loading}
-              onClick={() => handleSubmit()}
+              onClick={handleClick}
               type="button"
               className="w-100 text-center mt-2"
             >
