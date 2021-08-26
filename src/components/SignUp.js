@@ -1,9 +1,9 @@
 import React, { useRef, useState } from "react";
-import { Button, Card, Form, Alert } from "react-bootstrap";
+import { Button, Card, Form } from "react-bootstrap";
 import { Link, useHistory } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import * as faker from "faker/locale/en";
-
+import FormAutoFill from "./FormAutoFill";
 const SignUp = () => {
   const userNameRef = useRef();
   const emailRef = useRef();
@@ -11,9 +11,9 @@ const SignUp = () => {
   const passwordConfirmRef = useRef();
 
   const [loading, setLoading] = useState(false);
-  const [dumpBtn, setDumpBtn] = useState(false);
-  const history = useHistory();
   const { signUp, currentUser } = useAuth();
+
+  const history = useHistory();
 
   const handleClick = async () => {
     if (passwordRef.current.value !== passwordConfirmRef.current.value) {
@@ -29,28 +29,11 @@ const SignUp = () => {
     history.push("/login");
   };
 
-  const passwordAutoFill = () => {
-    passwordRef.current.value = "123456";
-    passwordConfirmRef.current.value = "123456";
-  };
-  const wholeFormAutoFill = () => {
-    userNameRef.current.value = faker.name.findName();
-    emailRef.current.value = faker.internet.email();
-    passwordRef.current.value = "123456";
-    passwordConfirmRef.current.value = "123456";
-  };
-
   return (
     <>
-      <button type="button" onClick={() => setDumpBtn(!dumpBtn)}>
-        Click to re-render
-      </button>
-      <button type="button" onClick={passwordAutoFill}>
-        Fill password
-      </button>
-      <button type="button" onClick={wholeFormAutoFill}>
-        Fill all
-      </button>
+      <FormAutoFill
+        refs={{ userNameRef, emailRef, passwordRef, passwordConfirmRef }}
+      />
       <Card className="w-100 mx-auto mt-5" style={{ maxWidth: "400px" }}>
         <Card.Body>
           <h2 className="text-center mb-4">Sign up</h2>
